@@ -1,10 +1,7 @@
 description = [[
-EduMap Pro: Fingerprints Indian .edu.in sites
-- Server, CMS, frameworks, SSL cert info, etc.
+EduMap Pro: Advanced Indian .edu.in fingerprinting.
+Detects server, CMS, JS frameworks, plus basic WHOIS enrichment.
 ]]
-
--- Usage:
--- nmap --script ./nse/fingerprint_edu_in.nse -p 80,443 -iL domains.txt
 
 author = "popeyee"
 categories = {"discovery", "safe"}
@@ -26,21 +23,21 @@ action = function(host, port)
 
   local body = resp.body or ""
 
-  -- Detect CMS
+  -- CMS detection
   if body:match("wp%-content") then output["CMS"]="WordPress"
   elseif body:match("Moodle") then output["CMS"]="Moodle"
   elseif body:match("Drupal") then output["CMS"]="Drupal"
   elseif body:match("Joomla") then output["CMS"]="Joomla"
   else output["CMS"]="Unknown" end
 
-  -- Detect frameworks
+  -- Framework detection
   if body:match("ng%-app") then output["Framework"]="AngularJS"
   elseif body:match("React") then output["Framework"]="React"
   elseif body:match("Vue") then output["Framework"]="Vue.js"
   else output["Framework"]="Unknown" end
 
-  -- WHOIS (basic, optional)
-  local whois_cmd = "whois " .. host.name .. " | grep -iE 'Registrant Organization|OrgName|Organization' | head -n 1"
+  -- WHOIS enrichment (simple)
+  local whois_cmd = "whois " .. host.name .. " | grep -iE 'Organization|OrgName' | head -n 1"
   local handle = io.popen(whois_cmd)
   local whois = handle:read("*a")
   handle:close()
