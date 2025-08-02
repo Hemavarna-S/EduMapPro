@@ -1,4 +1,4 @@
 PyQt5
-python-whois
 dnspython
 requests
+
